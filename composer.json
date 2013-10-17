@@ -1,0 +1,22 @@
+{
+    "name": "ebussola/facebook-handler",
+    "description": "Facebook Handler",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Leonardo Shinagawa",
+            "email": "leonardo@ebussola.com"
+        }
+    ],
+    "autoload" : {
+        "psr-0" : {
+            "ebussola\\facebook\\" : "src/"
+        }
+    },
+    "require": {
+        "facebook/php-sdk": "v3.2.2"
+    },
+    "require-dev" : {
+        "phpunit/phpunit": "3.7.28"
+    }
+}

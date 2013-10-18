@@ -1,5 +1,5 @@
 .idea
 vendor
 test/config.php
-test/everything_else/long_access_token.php
-test/only_auth/code.php
+test/1_only_auth/code.php
+test/2_everything_else/long_access_token.php

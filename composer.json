@@ -10,7 +10,7 @@
     ],
     "autoload" : {
         "psr-0" : {
-            "ebussola\\facebook\\" : "src/"
+            "ebussola\\facebook\\ads\\" : "src/"
         }
     },
     "require": {

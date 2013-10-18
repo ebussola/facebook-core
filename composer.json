@@ -1,7 +1,7 @@
 {
-    "name": "ebussola/facebook-handler",
-    "description": "Facebook Handler",
-    "minimum-stability": "dev",
+    "name": "ebussola/facebook-core",
+    "description": "Facebook Core",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "Leonardo Shinagawa",

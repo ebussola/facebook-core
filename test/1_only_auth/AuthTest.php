@@ -29,6 +29,13 @@ class AuthTest extends PHPUnit_Framework_TestCase {
         $this->core = new \ebussola\facebook\core\Core($app_id, $secret, $redirect_uri, $this->access_token_data);
     }
 
+    /**
+     * Step 1
+     * You must execute only this test first to get the auth-login
+     *
+     * You can open an server on the auth_test_server to receive the code from the server
+     * eg.: test/auth_test_server$ php -S localhost:8080
+     */
     public function testGetLoginUrl() {
         if (!$this->core->isLogged()) {
             $login = $this->core->getLoginUrl();
@@ -38,6 +45,15 @@ class AuthTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    /**
+     * Step 2
+     * Once you have the code, paste it on code.php and execute this one.
+     *
+     * Again, it will retrieve the valid token.
+     * Copy and paste on test/everything_else/long_access_token.php
+     *
+     * Now you can execute all the tests inside the everything_else folder
+     */
     public function testAuthentication() {
         $code = include(__DIR__.'/code.php');
         $this->core->authenticate($code);

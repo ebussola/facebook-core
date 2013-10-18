@@ -9,12 +9,12 @@
 class AuthTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * @var \ebussola\facebook\Core
+     * @var \ebussola\facebook\core\Core
      */
     private $core;
 
     /**
-     * @var \ebussola\facebook\AccessTokenData
+     * @var \ebussola\facebook\core\AccessTokenData
      */
     private $access_token_data;
 
@@ -26,7 +26,7 @@ class AuthTest extends PHPUnit_Framework_TestCase {
         $redirect_uri = $config['redirect_uri'];
 
         $this->access_token_data = new AccessTokenData();
-        $this->core = new \ebussola\facebook\Core($app_id, $secret, $redirect_uri, $this->access_token_data);
+        $this->core = new \ebussola\facebook\core\Core($app_id, $secret, $redirect_uri, $this->access_token_data);
     }
 
     public function testGetLoginUrl() {

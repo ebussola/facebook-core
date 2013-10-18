@@ -6,7 +6,7 @@
  * Time: 15:22
  */
 
-class AccessTokenData implements \ebussola\facebook\AccessTokenData {
+class AccessTokenData implements \ebussola\facebook\core\AccessTokenData {
 
     private $long_access_token;
 

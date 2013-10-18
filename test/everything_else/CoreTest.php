@@ -9,7 +9,7 @@
 class CoreTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * @var \ebussola\facebook\Core
+     * @var \ebussola\facebook\core\Core
      */
     private $core;
 
@@ -23,7 +23,7 @@ class CoreTest extends PHPUnit_Framework_TestCase {
 
         $access_token_data = new AccessTokenData();
         $access_token_data->setLongAccessToken($token['access_token'], $token['expires']);
-        $this->core = new \ebussola\facebook\Core($app_id, $secret, $redirect_uri, $access_token_data);
+        $this->core = new \ebussola\facebook\core\Core($app_id, $secret, $redirect_uri, $access_token_data);
     }
 
     public function testLogoutUrl() {

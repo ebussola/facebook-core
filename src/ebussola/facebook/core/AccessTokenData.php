@@ -6,7 +6,7 @@
  * Time: 14:01
  */
 
-namespace ebussola\facebook;
+namespace ebussola\facebook\core;
 
 
 interface AccessTokenData {

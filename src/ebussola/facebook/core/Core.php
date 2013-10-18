@@ -6,7 +6,7 @@
  * Time: 16:22
  */
 
-namespace ebussola\facebook;
+namespace ebussola\facebook\core;
 
 
 class Core extends \BaseFacebook {

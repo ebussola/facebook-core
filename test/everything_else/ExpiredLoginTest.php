@@ -14,7 +14,7 @@ class ExpiredLoginTest extends PHPUnit_Framework_TestCase {
 
         $access_token_data = new AccessTokenData();
         $access_token_data->setLongAccessToken($token['access_token'], 1);
-        $core = new \ebussola\facebook\Core($config['app_id'], $config['secret'], $config['redirect_uri'], $access_token_data);
+        $core = new \ebussola\facebook\core\Core($config['app_id'], $config['secret'], $config['redirect_uri'], $access_token_data);
 
         sleep(2);
         $this->assertFalse($core->isLogged());

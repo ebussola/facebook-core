@@ -135,9 +135,7 @@ class Core extends \BaseFacebook {
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             } else if ($method === 'get') {
-                if (count($data) > 0) {
-                    $url = $url . '?' . http_build_query($data);
-                }
+                $url = $this->buildQuery($data, $url);
 
                 $ch = curl_init($url);
             } else {
@@ -200,6 +198,32 @@ class Core extends \BaseFacebook {
         }
 
         return $results;
+    }
+
+    /**
+     * @param array  $data
+     * @param string $path
+     * @param string $method
+     *
+     * @return array
+     */
+    public function createRequest($data, $path='', $method='post') {
+        switch ($method) {
+            case 'post' :
+                return array(
+                    'method' => 'post',
+                    'relative_url' => $path,
+                    'body' => $data
+                );
+
+            case 'get' :
+                return array(
+                    'method' => 'get',
+                    'relative_url' => $this->buildQuery($data, $path)
+                );
+        }
+
+        return null;
     }
 
     /**
@@ -328,6 +352,22 @@ class Core extends \BaseFacebook {
      */
     protected function clearAllPersistentData() {
         $this->access_token_data->clearLongAccessToken();
+    }
+
+    /**
+     * @param $data
+     * @param $url
+     *
+     * @return string
+     */
+    private function buildQuery($data, $url) {
+        if (count($data) > 0) {
+            $url = $url . '?' . http_build_query($data);
+
+            return $url;
+        }
+
+        return $url;
     }
 
 }

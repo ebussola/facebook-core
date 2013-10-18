@@ -6,7 +6,7 @@
  * Time: 15:13
  */
 
-// simulate HTTP_HOST
+// simulate browser variables
 $_SERVER['HTTP_HOST'] = 'localhost';
 $_SERVER['REQUEST_URI'] = '/';
 

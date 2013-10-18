@@ -9,6 +9,8 @@
 namespace ebussola\facebook\core;
 
 
+use ebussola\facebook\core\exception\OAuthException;
+
 class Core extends \BaseFacebook {
 
     /**
@@ -234,10 +236,16 @@ class Core extends \BaseFacebook {
     private function isNotValidResponse($result) {
         $is_class = $result instanceof \stdClass;
 
-        return (
+        $not_valid = (
             (!$is_class && $result === null)
             || ($is_class && isset($result->error))
         );
+
+        if ($not_valid && $result->error->type === "OAuthException") {
+            throw new OAuthException($result->error->message);
+        }
+
+        return $not_valid;
     }
 
     /**

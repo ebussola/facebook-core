@@ -84,4 +84,21 @@ class CoreTest extends PHPUnit_Framework_TestCase {
         $this->assertCount(5, $results[1]->data);
     }
 
+    public function testOAuthException() {
+        $this->setExpectedException('\ebussola\facebook\core\exception\OAuthException');
+
+        global $config;
+
+        $app_id = $config['app_id'];
+        $secret = $config['secret'];
+        $redirect_uri = $config['redirect_uri'];
+
+        $access_token_data = new AccessTokenData();
+        $access_token_data->setLongAccessToken('foo', 5000);
+        $this->core = new \ebussola\facebook\core\Core($app_id, $secret, $redirect_uri, $access_token_data);
+
+        // any request, just to get the error
+        $this->core->curl(array(), '/me', 'get');
+    }
+
 }

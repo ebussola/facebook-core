@@ -27,7 +27,7 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testLogoutUrl() {
-        $logout_url = $this->core->getLogoutUrl('http://localhost');
+        $logout_url = $this->core->getLogoutUrl(array('redirect_uri' => 'http://localhost'));
 
         $this->assertContains('https://www.facebook.com/logout.php', $logout_url);
     }

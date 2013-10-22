@@ -62,7 +62,7 @@ class Core extends \BaseFacebook {
     }
 
     /**
-     * @param string $redirect_uri
+     * @param array $params
      *
      * @return string
      */

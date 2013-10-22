@@ -183,7 +183,7 @@ class Core extends \BaseFacebook {
         $offset = 0;
 
         while ($offset < $count) {
-            $part = array_slice($requests, $offset, $offset+self::FB_BATCH_LIMIT);
+            $part = array_slice($requests, $offset, self::FB_BATCH_LIMIT);
             $results_with_header = $this->curl(array('batch' => json_encode($part)));
 
             if (!empty($results_with_header)) {

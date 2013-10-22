@@ -73,15 +73,25 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testBatchRequest() {
+        // small requests size
         $results = $this->core->batchRequest(array(
             $this->core->createRequest(array(), '/me', 'get'),
             $this->core->createRequest(array('limit' => 5), '/me/friends', 'get')
         ));
-
-
         $this->assertObjectHasAttribute('id', $results[0]);
-
         $this->assertCount(5, $results[1]->data);
+
+        // big requests size
+        $requests = array();
+        for ($i=0 ; $i<200 ; $i++) {
+            $requests[] = $this->core->createRequest(array(), '/me', 'get');
+        }
+        $results = $this->core->batchRequest($requests);
+
+        $this->assertCount(200, $results);
+        foreach ($results as $result) {
+            $this->assertObjectHasAttribute('id', $result);
+        }
     }
 
     public function testOAuthException() {

@@ -66,11 +66,12 @@ class Core extends \BaseFacebook {
      *
      * @return string
      */
-    public function getLogoutUrl($redirect_uri) {
+    public function getLogoutUrl($params = array()) {
         $this->checkFacebookConnection();
 
-        $params = array();
-        $params['next'] = $redirect_uri;
+        if (isset($params['redirect_uri'])) {
+            $params['next'] = $params['redirect_uri'];
+        }
 
         return parent::getLogoutUrl($params);
     }
@@ -147,7 +148,11 @@ class Core extends \BaseFacebook {
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); /* obey redirects */
             curl_setopt($ch, CURLOPT_HEADER, 0); /* No HTTP headers */
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); /* return the data */
+            curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/../../../../res/fb_ca_chain_bundle.crt');
             $result = curl_exec($ch);
+            if ($result === false) {
+                throw new \Exception(curl_error($ch));
+            }
             curl_close($ch);
 
             if ($fails > self::MAX_REQUEST_ATTEMPTS) {

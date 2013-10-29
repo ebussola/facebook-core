@@ -187,6 +187,17 @@ class Core extends \BaseFacebook {
     }
 
     /**
+     * @param string $query
+     *
+     * @return mixed
+     */
+    public function fql($query) {
+        $result = $this->curl(array('q' => $query), '/fql', 'get');
+
+        return $result->data;
+    }
+
+    /**
      * @param array $requests
      * @return array
      */

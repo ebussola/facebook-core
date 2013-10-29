@@ -111,4 +111,22 @@ class CoreTest extends PHPUnit_Framework_TestCase {
         $this->core->curl(array(), '/me', 'get');
     }
 
+    public function testPagination() {
+        $result = $this->core->curl(array('q' => 'select count, flid from friendlist where owner = me()'), '/fql', 'get');
+        usort($result->data, function($a, $b) {
+            if ($a->count == $b->count) {
+                return 0;
+            }
+
+            return ($a->count > $b->count) ? -1 : 1;
+        });
+
+        $list = $result->data[0];
+        $page_size = ceil($list->count / 5);
+
+        $test_result = $this->core->curl(array('limit' => $page_size), '/'.$list->flid.'/members', 'get');
+
+        $this->assertCount($list->count, $test_result->data);
+    }
+
 }

@@ -9,7 +9,13 @@
 namespace ebussola\facebook\core;
 
 
+use Doctrine\Common\Cache\FilesystemCache;
 use ebussola\facebook\core\exception\OAuthException;
+use Guzzle\Cache\DoctrineCacheAdapter;
+use Guzzle\Http\Exception\ClientErrorResponseException;
+use Guzzle\Plugin\Cache\CachePlugin;
+use Guzzle\Plugin\Cache\DefaultCacheStorage;
+use Guzzle\Service\Client;
 
 class Core extends \BaseFacebook {
 
@@ -40,10 +46,20 @@ class Core extends \BaseFacebook {
      */
     private $is_logged;
 
-    public function __construct($app_id, $secret, $redirect_uri, AccessTokenData $access_token_data, $scope='ads_management') {
+    /**
+     * @var Client
+     */
+    private $guzzle_client;
+
+    public function __construct($app_id, $secret, $redirect_uri, AccessTokenData $access_token_data, $scope='ads_management', $guzzle_client=null) {
         $this->scope = $scope;
         $this->redirect_uri = rtrim($redirect_uri, '/') . '/';
         $this->access_token_data = $access_token_data;
+
+        if ($guzzle_client === null) {
+            $guzzle_client = new Client();
+        }
+        $this->guzzle_client = $guzzle_client;
 
         parent::__construct(array(
             'appId' => $app_id,
@@ -111,8 +127,13 @@ class Core extends \BaseFacebook {
      *
      * @return \stdClass[]
      */
-    public function curl($data, $path='', $method='post') {
+    public function curl($data=array(), $path='', $method='post') {
         $fails = 0;
+        $this->guzzle_client->setBaseUrl('https://graph.facebook.com');
+
+        if (substr($path, 0, 26) != 'https://graph.facebook.com') {
+            $data['access_token'] = $this->getAccessToken();
+        }
 
         do {
             if ($fails > 0) {
@@ -120,53 +141,45 @@ class Core extends \BaseFacebook {
             }
 
             $result = null;
-            if (substr($path, 0, 26) == 'https://graph.facebook.com') {
-                $url = $path;
-            } else {
-                $path = '/' . trim($path, '//');
-                $data['access_token'] = $this->getAccessToken();
-                $url = "https://graph.facebook.com$path";
-            }
 
-            if ($method === 'post') {
-                foreach ($data as &$data_param) {
-                    if (is_array($data_param)) {
-                        $data_param = json_encode($data_param);
+            switch ($method) {
+                case 'get' :
+                    $path = $this->buildQuery($data, $path);
+                    $request = $this->guzzle_client->get($path);
+                    break;
+
+                case 'post' :
+                    foreach ($data as &$data_param) {
+                        if (is_array($data_param)) {
+                            $data_param = json_encode($data_param);
+                        }
                     }
-                }
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            } else if ($method === 'get') {
-                $url = $this->buildQuery($data, $url);
 
-                $ch = curl_init($url);
-            } else {
-                throw new \Exception('Available methods: post or get');
+                    $request = $this->guzzle_client->post($path, array(), $data);
+                    break;
+
+                default :
+                    throw new \Exception('Available methods: post or get');
+                    break;
             }
 
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); /* obey redirects */
-            curl_setopt($ch, CURLOPT_HEADER, 0); /* No HTTP headers */
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); /* return the data */
-            curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/../../../../res/fb_ca_chain_bundle.crt');
-            $result = curl_exec($ch);
-            if ($result === false) {
-                throw new \Exception(curl_error($ch));
+            try {
+                $response = $request->send();
+            } catch (ClientErrorResponseException $e) {
+                throw new OAuthException('Error', 0, $e);
             }
-            curl_close($ch);
 
             if ($fails > self::MAX_REQUEST_ATTEMPTS) {
                 throw new \Exception('Failed to connect to server '.self::MAX_REQUEST_ATTEMPTS.' times');
             }
             $fails++;
 
-            $result = json_decode($result);
+            $result = json_decode($response->getBody(true));
 
         } while ($this->isNotValidResponse($result));
 
         if (isset($result->paging) && isset($result->paging->next) && $result->paging->next != null) {
-            usleep(1000);
-            $next_result = $this->curl([], $result->paging->next, 'get');
+            $next_result = $this->curl(array(), $result->paging->next, 'get');
             $result->data = array_merge($result->data, $next_result->data);
         }
 
@@ -240,15 +253,7 @@ class Core extends \BaseFacebook {
      */
     private function isNotValidResponse($result) {
         $is_class = $result instanceof \stdClass;
-
-        $not_valid = (
-            (!$is_class && $result === null)
-            || ($is_class && isset($result->error))
-        );
-
-        if ($not_valid && $result->error->type === "OAuthException") {
-            throw new OAuthException($result->error->message);
-        }
+        $not_valid = (!$is_class && $result === null);
 
         return $not_valid;
     }

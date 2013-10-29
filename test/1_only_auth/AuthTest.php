@@ -24,9 +24,10 @@ class AuthTest extends PHPUnit_Framework_TestCase {
         $app_id = $config['app_id'];
         $secret = $config['secret'];
         $redirect_uri = $config['redirect_uri'];
+        $scope = $config['scope'];
 
         $this->access_token_data = new AccessTokenData();
-        $this->core = new \ebussola\facebook\core\Core($app_id, $secret, $redirect_uri, $this->access_token_data);
+        $this->core = new \ebussola\facebook\core\Core($app_id, $secret, $redirect_uri, $this->access_token_data, $scope);
     }
 
     /**

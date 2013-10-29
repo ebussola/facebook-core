@@ -3,5 +3,6 @@
 return array(
     'app_id' => '',
     'secret' => '',
-    'redirect_uri' => ''
+    'redirect_uri' => '',
+    'scope' => 'email,publish_actions,offline_access,publish_stream,user_birthday,read_friendlists' // MUST have read_friendlists to test
 );

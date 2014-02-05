@@ -167,6 +167,7 @@ class Core extends \BaseFacebook {
         if (isset($result->paging) && isset($result->paging->next) && $result->paging->next != null) {
             usleep(1000);
             $next_result = $this->curl([], $result->paging->next, 'get');
+            /** @noinspection PhpUndefinedFieldInspection */
             $result->data = array_merge($result->data, $next_result->data);
         }
 
@@ -246,7 +247,9 @@ class Core extends \BaseFacebook {
             || ($is_class && isset($result->error))
         );
 
+        /** @noinspection PhpUndefinedFieldInspection */
         if ($not_valid && $result->error->type === "OAuthException") {
+            /** @noinspection PhpUndefinedFieldInspection */
             throw new OAuthException($result->error->message);
         }
 
@@ -316,6 +319,10 @@ class Core extends \BaseFacebook {
         switch ($key) {
             case 'access_token' :
                 $long_access_token = $this->getLongLifeAccessToken($value['access_token']);
+                if (!isset($long_access_token['expires'])) {
+                    // in case of API do not response the expire time, we set the default (60 days)
+                    $long_access_token['expires'] = 5184000;
+                }
                 $this->access_token_data->setLongAccessToken($long_access_token['access_token'], $long_access_token['expires']);
                 break;
         }

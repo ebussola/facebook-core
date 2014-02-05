@@ -128,11 +128,12 @@ class CoreTest extends PHPUnit_Framework_TestCase {
             return ($a->count > $b->count) ? -1 : 1;
         });
 
-        $list = $friendlists[0];
+        $list = reset($friendlists);
         $page_size = ceil($list->count / 5);
 
         $test_result = $this->core->curl(array('limit' => $page_size), '/'.$list->flid.'/members', 'get');
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertCount($list->count, $test_result->data);
     }
 

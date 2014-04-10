@@ -174,7 +174,7 @@ class Core extends \BaseFacebook {
             }
             $fails++;
 
-            $result = json_decode($response->getBody(true));
+            $result = json_decode($response->getBody(true), false, 512, JSON_BIGINT_AS_STRING);
 
         } while ($this->isNotValidResponse($result));
 
@@ -217,7 +217,7 @@ class Core extends \BaseFacebook {
                 foreach ($results_with_header as $r) {
                     if ($r instanceof \stdClass && isset($r->body)) {
                         if ($r->code == 200) {
-                            $results[] = json_decode($r->body);
+                            $results[] = json_decode($r->body, false, 512, JSON_BIGINT_AS_STRING);
                             $offset++;
                         } else {
                             throw new \Exception($r->body);
